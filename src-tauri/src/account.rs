@@ -33,9 +33,18 @@ pub async fn login_new(
     email: String,
     password: String,
     anisette_server: String,
+    client_info: Option<String>,
     save_credentials: bool,
 ) -> Result<(), AppError> {
-    let account = login(&handle, window, &email, &password, anisette_server).await?;
+    let account = login(
+        &handle,
+        window,
+        &email,
+        &password,
+        anisette_server,
+        client_info,
+    )
+    .await?;
     let mut sideloader_guard = sideloader_state.lock().unwrap();
     *sideloader_guard = Some(account);
 
@@ -73,6 +82,7 @@ pub async fn login_stored(
     window: Window,
     email: String,
     anisette_server: String,
+    client_info: Option<String>,
     sideloader_state: State<'_, SideloaderMutex>,
 ) -> Result<(), AppError> {
     let pass_entry = Entry::new("iloader", &email).map_err(|e| {
@@ -84,7 +94,15 @@ pub async fn login_stored(
     let password = pass_entry.get_password().map_err(|e| {
         AppError::KeyringWithMessage("Failed to get credentials".to_string(), e.to_string())
     })?;
-    let account = login(&handle, window, &email, &password, anisette_server).await?;
+    let account = login(
+        &handle,
+        window,
+        &email,
+        &password,
+        anisette_server,
+        client_info,
+    )
+    .await?;
     let mut sideloader_guard = sideloader_state.lock().unwrap();
     *sideloader_guard = Some(account);
 
@@ -162,6 +180,7 @@ async fn login(
     email: &str,
     password: &str,
     anisette_server: String,
+    client_info: Option<String>,
 ) -> Result<Sideloader<MaxCertsCallbackBox>, AppError> {
     let tfa_closure = {
         let window_clone = window.clone();
@@ -200,7 +219,8 @@ async fn login(
             RemoteV3AnisetteProvider::default()?
                 .set_serial_number("0".to_string())
                 .set_storage(create_sideloading_storage(app)?)
-                .set_url(&anisette_url),
+                .set_url(&anisette_url)
+                .set_client_info(client_info),
         )
         .login(password, Box::new(tfa_closure))
         .await?;

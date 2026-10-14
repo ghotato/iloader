@@ -34,6 +34,7 @@ export const AppleID = ({
     "anisetteServer",
     "ani.sidestore.io",
   );
+  const [clientInfo] = useStore<string>("clientInfo", "");
   const [certs, setCerts] = useState<Certificate[] | null>(null);
   const [selectedSerials, setSelectedSerials] = useState<string[]>([]);
   const [chooseCertsOpen, setChooseCertsOpen] = useState<boolean>(false);
@@ -145,6 +146,7 @@ export const AppleID = ({
                             await invoke("login_stored", {
                               email: id,
                               anisetteServer,
+                              clientInfo: clientInfo || null,
                             });
                             setForceUpdateIds((v) => v + 1);
                           };
@@ -213,6 +215,7 @@ export const AppleID = ({
                     password: passwordInput,
                     saveCredentials: saveCredentials,
                     anisetteServer,
+                    clientInfo: clientInfo || null,
                   });
                   setForceUpdateIds((v) => v + 1);
                 };

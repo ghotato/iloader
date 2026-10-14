@@ -45,6 +45,8 @@ export const Settings = ({
     "ani.sidestore.io",
   );
 
+  const [clientInfo, setClientInfo] = useStore<string>("clientInfo", "");
+
   const [overrideKeyring, setOverrideKeyring] = useStore<boolean>(
     "overrideKeyring",
     false,
@@ -120,6 +122,31 @@ export const Settings = ({
           customToggleLabel={t("settings.use_custom_anisette")}
           presetToggleLabel={t("settings.back_preset_servers")}
         />
+        <div style={{ marginTop: 12 }}>
+          <label
+            htmlFor="client-info-input"
+            style={{ display: "block", marginBottom: 6, fontWeight: 600 }}
+          >
+            Client Info override (X-Mme-Client-Info)
+          </label>
+          <input
+            id="client-info-input"
+            type="text"
+            spellCheck={false}
+            autoCapitalize="off"
+            autoCorrect="off"
+            style={{ width: "100%", boxSizing: "border-box" }}
+            placeholder="<PC> <Windows;6.2(0,0);9200> <com.apple.AuthKitWin/1 (com.apple.iCloud/7.21)>"
+            value={clientInfo}
+            onChange={(e) => setClientInfo(e.target.value)}
+          />
+          <p className="settings-hint" style={{ margin: "6px 0 0 0" }}>
+            Leave blank to use the anisette server's value. Set this to claim a
+            specific platform to Apple (e.g. Windows) without changing your
+            server — useful when Apple blocks a platform. Whitespace is trimmed
+            automatically.
+          </p>
+        </div>
         <div>
           <Dropdown
             label={t("app.language")}
